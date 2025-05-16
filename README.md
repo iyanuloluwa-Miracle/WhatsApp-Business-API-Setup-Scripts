@@ -1,4 +1,3 @@
-
 # WhatsApp Business API Setup & Usage Guide
 
 ## Overview
@@ -129,6 +128,21 @@ During our setup, I encountered and resolved several common issues:
 
 - **Container Networking Issues:**  
   If containers cannot communicate (e.g., `waweb` cannot reach `db`), ensure all services are on the same custom Docker network in `docker-compose.yml`.
+
+- **Database Hostname Resolution Error:**  
+  If you see repeated messages like:
+  ```
+  nc: getaddrinfo for host "db" port 3306: Name or service not known
+  MySQL is not up yet - sleeping
+  ```
+  This means your containers are not on the same Docker network, so the service name `db` cannot be resolved.
+  
+  **Solution:**  
+  - Define a custom network in your `docker-compose.yml` and attach all services to it.
+  - Remove any `network_mode: bridge` lines from individual services.
+  - Restart your containers with `docker-compose down` and `docker-compose up -d`.
+  
+  This will allow all containers to communicate using their service names.
 
 - **Access Denied / Missing Credentials:**  
   If you see an authentication error, it means the API is running but you need to provide valid credentials.
